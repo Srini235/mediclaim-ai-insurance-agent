@@ -56,6 +56,8 @@ This document summarizes the project architecture, implemented patterns, securit
 
 ## Notes on folder naming
 
-The project code does not depend on the folder being named `mediclaim-ai-insurance-agent`. The important requirement is that the repository root is on Python's import path when running commands like `python train_and_save.py` or `uvicorn api_server:app`.
+The project code is intentionally folder-name independent. The important requirement is that the repository root is on Python's import path when running commands like `python train_and_save.py` or `python -m uvicorn api_server:app --reload --port 8000`.
 
-However, the README and shell examples use `cd mediclaim-ai-insurance-agent` because that is the repository folder name in this workspace.
+`train_and_save.py` detects the repository root by walking upward from its own file location and loads `data/hydraulic_fleet_telemetry.csv` from there. `api_server.py` now resolves the `model_registry/` path using `Path(__file__).resolve().parent`, so it does not depend on the current working directory.
+
+The README examples still use `cd mediclaim-ai-insurance-agent` because that is the local workspace path in this review copy, but the code itself works from any root folder name.

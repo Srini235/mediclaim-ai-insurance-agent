@@ -90,18 +90,23 @@ improvements, and open checklist items for future hardening.
 4. **Security** — input validation, API-key auth, model integrity, audit logging, rate limiting
 
 ## How to run
+This project is folder-name independent for runtime execution. The code imports `src` as a package and uses absolute root-relative paths in the backend, so you can run commands from the repository root regardless of the parent folder name.
+
 See **[RUN.md](RUN.md)** for full steps. Quick start:
 
 ```bash
 # Option A — Docker (one command)
 docker compose up --build            # web: http://localhost:5173  · api: http://localhost:8000/docs
 
-# Option B — notebook only
-pip install -r requirements-notebook.txt
-jupyter notebook 105.ipynb           # or open 105.html
+# Option B — API + training from repository root
+python train_and_save.py              # creates model_registry artifacts
+python -m uvicorn api_server:app --reload --port 8000
+
+# Option B alternative — force retrain
+python train_and_save.py --force
 ```
 
 Run the tests:
 ```bash
-python3 -m pytest tests/test_predictive_maintenance.py -q     # 18 passed
+python -m pytest tests/test_predictive_maintenance.py -q     # 18 passed
 ```
