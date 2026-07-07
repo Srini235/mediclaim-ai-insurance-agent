@@ -127,6 +127,8 @@ def predict(reading: SensorReading, x_api_key: str = Header(default=API_KEY)):
     t0 = time.perf_counter()
     payload = reading.model_dump()
     machine_type = payload.pop("machine_type")
+
+    # Filter 1 & 2: Security, Rate-Limiting, and Hydraulic Outlier Filtering
     try:
         def predict_fn(clean_payload):
             return clean_payload
@@ -144,10 +146,12 @@ def predict(reading: SensorReading, x_api_key: str = Header(default=API_KEY)):
     clean["machine_type"] = machine_type
     X = pd.DataFrame([[clean[c] for c in FEATURES]], columns=FEATURES)
 
+    # Filter 3 & 4: Model Registry Validation & Machine Learning Inference
     cond_pred = _condition_model.predict(X)[0]
     stability = "unstable" if int(_stability_model.predict(X)[0]) == 1 else "stable"
     latency = round((time.perf_counter() - t0) * 1000, 2)
 
+    # Filter 5: Maintenance Advisor Severity Resolution & RAG Enrichment
     components, worst = [], None
     worst_sev = 0
     for i, target in enumerate(TARGETS):
@@ -167,6 +171,7 @@ def predict(reading: SensorReading, x_api_key: str = Header(default=API_KEY)):
 
     _audit.record("frontend", "predict", f"stability={stability} worst={worst}")
 
+    # Filter 6: Structured Prediction Response Compilation
     return PredictionResponse(
         components=components, stability=stability, flagged_component=worst,
         repair_procedure=procedure, repair_guidance=guidance,

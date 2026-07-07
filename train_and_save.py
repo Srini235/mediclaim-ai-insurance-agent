@@ -67,6 +67,7 @@ TARGETS = ["cooler_condition", "valve_condition", "pump_leakage", "accumulator_p
 RT_TARGET = "stability_flag"
 NOISY_COLS = ["pressure_mean_bar", "flow_mean_lpm", "oil_temp_mean_c", "vibration_rms_mms"]
 
+# Run mlflow logging
 def _log_mlflow_run(condition_path: Path, stability_path: Path,
                     schema_path: Path, cond_metrics: dict, rt_acc: float) -> None:
     mlflow_uri = os.getenv("MLFLOW_TRACKING_URI")
@@ -95,7 +96,7 @@ def _log_mlflow_run(condition_path: Path, stability_path: Path,
         mlflow.log_artifact(str(stability_path), artifact_path="model_registry")
         mlflow.log_artifact(str(schema_path), artifact_path="model_registry")
 
-
+#Execute main training and saving logic
 def main(force: bool = False):
     REGISTRY.mkdir(parents=True, exist_ok=True)
     # Do not require the dataset unless we actually need to retrain; check later.
